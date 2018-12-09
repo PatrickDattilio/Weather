@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="location"
+            type="com.dattilio.weather.location.model.Location" />
+
+        <variable
+            name="locationClicked"
+            type="com.dattilio.weather.location.OnLocationClickedListener" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="@{(view)->locationClicked.onLocationClicked(view,location.zip)}"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/cityName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:text="@{location.toString()}"
+            android:textSize="24sp"
+            tools:text="Hagerstown" />
+
+    </LinearLayout>
+</layout>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/locationFragment">
+    <fragment
+        android:id="@+id/locationFragment"
+        android:name="com.dattilio.weather.location.LocationFragment"
+        android:label="Weather"
+        tools:layout="@layout/fragment_location">
+        <action
+            android:id="@+id/openWeatherAction"
+            app:destination="@id/weatherFragment" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/weatherFragment"
+        android:name="com.dattilio.weather.forecast.WeatherFragment"
+        android:label=""
+        tools:layout="@layout/fragment_weather">
+        <argument
+            android:name="zip"
+            app:argType="string" />
+    </fragment>
+
+</navigation>
