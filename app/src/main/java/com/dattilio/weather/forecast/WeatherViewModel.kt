@@ -2,6 +2,7 @@ package com.dattilio.weather.forecast
 
 import androidx.lifecycle.ViewModel
 import com.dattilio.weather.forecast.model.*
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -15,15 +16,16 @@ import java.util.*
 import kotlin.math.roundToInt
 
 class WeatherViewModel : ViewModel() {
-    val weatherSubject: BehaviorSubject<ForecastUiState> = BehaviorSubject.createDefault(ForecastUiState.Loading)
+    private val forecastState: BehaviorSubject<ForecastUiState> = BehaviorSubject.createDefault(ForecastUiState.Loading)
+    val forecastUiState: Observable<ForecastUiState> = forecastState
 
-    val weatherService = Retrofit.Builder()
+    private val weatherService = Retrofit.Builder()
         .baseUrl("http://api.openweathermap.org/data/2.5/")
         .addConverterFactory(MoshiConverterFactory.create())
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .build()
         .create(WeatherService::class.java)
-    lateinit var subscription: Disposable
+    private lateinit var subscription: Disposable
 
     fun setZip(zip: String) {
         subscription = weatherService.weatherByZip(zip)
@@ -34,13 +36,13 @@ class WeatherViewModel : ViewModel() {
                 { error -> error(error) })
     }
 
-    fun success(data: Weather) {
-        weatherSubject.onNext(ForecastUiState.Success(data))
+    private fun success(data: Weather) {
+        forecastState.onNext(ForecastUiState.Success(data))
     }
 
-    fun error(error: Throwable) {
+    private fun error(error: Throwable) {
         Timber.e(error)
-        weatherSubject.onNext(ForecastUiState.Error("Oops"))
+        forecastState.onNext(ForecastUiState.Error("Oops"))
     }
 
     override fun onCleared() {

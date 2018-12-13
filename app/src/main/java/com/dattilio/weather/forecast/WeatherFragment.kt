@@ -23,15 +23,9 @@ import timber.log.Timber
 
 class WeatherFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = WeatherFragment()
-    }
-
     private lateinit var viewModel: WeatherViewModel
     private lateinit var weatherAdapter: WeatherAdapter
     private lateinit var locationRepository: LocationRepository
-
-
     private lateinit var subscription: Disposable
 
     override fun onCreateView(
@@ -46,21 +40,27 @@ class WeatherFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val zip = WeatherFragmentArgs.fromBundle(arguments).zip
 
-        locationRepository = LocationRepository(requireContext())
+        locationRepository = LocationRepository(requireActivity().applicationContext)
         weatherAdapter = WeatherAdapter()
         recyclerview.addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         recyclerview.layoutManager = LinearLayoutManager(view.context, RecyclerView.VERTICAL, false)
         recyclerview.adapter = weatherAdapter
+
         viewModel = ViewModelProviders.of(this).get(WeatherViewModel::class.java)
         viewModel.setZip(zip)
         subscription =
-                viewModel.weatherSubject.subscribe({ uiState -> updateUi(uiState) }, { error -> Timber.e(error) })
+                viewModel.forecastUiState.subscribe({ uiState -> updateUi(uiState) }, { error -> Timber.e(error) })
+    }
+
+    override fun onDestroyView() {
+        subscription.dispose()
+        super.onDestroyView()
     }
 
     private fun updateUi(uiState: ForecastUiState) {
         when (uiState) {
             ForecastUiState.Loading -> showLoading()
-            is ForecastUiState.Success -> showWeather(uiState)
+            is ForecastUiState.Success -> showWeather(uiState.weather)
             is ForecastUiState.Error -> showError()
         }
     }
@@ -68,27 +68,22 @@ class WeatherFragment : Fragment() {
     private fun showError() {
     }
 
-    private fun showWeather(uiState: ForecastUiState.Success) {
-        weatherAdapter.updateWeather(uiState.data.hourlyForecastList)
-        updateCity(uiState.data)
+    private fun showWeather(weather: Weather) {
+        weatherAdapter.updateWeather(weather.hourlyForecastList)
+        updateCity(weather.cityName, weather.zip)
         loading.visibility = GONE
         recyclerview.visibility = VISIBLE
     }
 
 
-    private fun updateCity(data: Weather) {
-        (activity as MainActivity).changeTitle(data.cityName)
-        locationRepository.addLocation(Location(data.cityName, data.zip))
+    private fun updateCity(cityName: String, zip: String) {
+        (activity as MainActivity).changeTitle(cityName)
+        locationRepository.addLocation(Location(cityName, zip))
     }
 
     private fun showLoading() {
         recyclerview.visibility = GONE
         loading.visibility = VISIBLE
-    }
-
-    override fun onDestroyView() {
-        subscription.dispose()
-        super.onDestroyView()
     }
 
 }
