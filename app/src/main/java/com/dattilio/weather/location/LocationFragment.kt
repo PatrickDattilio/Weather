@@ -12,27 +12,26 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dattilio.weather.R
+import com.dattilio.weather.location.model.Location
 import com.dattilio.weather.location.model.LocationUiState
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_location.*
 import timber.log.Timber
 
 interface OnLocationClickedListener {
-    fun onLocationClicked(view: View, zip: String)
+    fun onLocationClicked(zip: String)
 }
 
 class LocationFragment : Fragment(), OnLocationClickedListener {
 
-    companion object {
-        fun newInstance() = LocationFragment()
-    }
-
     private lateinit var viewModel: LocationViewModel
+    private lateinit var locationAdapter: LocationAdapter
+    private lateinit var subscription: Disposable
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,42 +40,40 @@ class LocationFragment : Fragment(), OnLocationClickedListener {
         return inflater.inflate(R.layout.fragment_location, container, false)
     }
 
-    private lateinit var locationAdapter: LocationAdapter
-
-    private lateinit var subscription: Disposable
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         locationAdapter = LocationAdapter(this)
         recyclerview.addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         recyclerview.layoutManager = LinearLayoutManager(view.context, RecyclerView.VERTICAL, false)
         recyclerview.adapter = locationAdapter
+        floatingActionButton.setOnClickListener { onFabClicked() }
 
         viewModel = ViewModelProviders.of(this).get(LocationViewModel::class.java)
-        viewModel.setup(LocationRepository(requireContext()))
+        viewModel.setup(LocationRepository(requireActivity().applicationContext))
         subscription =
-                viewModel.locationSubject.subscribe({ uiState -> updateUi(uiState) }, { error -> Timber.e(error) })
-        floatingActionButton.setOnClickListener { onFabClicked(view) }
+                viewModel.locationStateSubject.subscribe({ uiState -> updateUi(uiState) }, { error -> Timber.e(error) })
+
     }
 
     private fun updateUi(uiState: LocationUiState) {
         when (uiState) {
             LocationUiState.Loading -> showLoading()
             LocationUiState.Empty -> showEmpty()
-            is LocationUiState.Success -> showLocations(uiState)
+            is LocationUiState.Success -> showLocations(uiState.locations)
             is LocationUiState.Error -> showError()
         }
     }
 
-    private fun showLocations(uiState: LocationUiState.Success) {
-        locationAdapter.update(uiState.data)
+    private fun showError() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun showLocations(locations: List<Location>) {
+        locationAdapter.update(locations)
         loading.visibility = GONE
         addLocation.visibility = GONE
         recyclerview.visibility = VISIBLE
-    }
-
-    private fun showError() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private fun showEmpty() {
@@ -92,7 +89,7 @@ class LocationFragment : Fragment(), OnLocationClickedListener {
     }
 
 
-    private fun onFabClicked(view: View) {
+    private fun onFabClicked() {
         val input = EditText(requireContext())
         input.inputType = InputType.TYPE_CLASS_NUMBER
         input.filters = arrayOf(InputFilter.LengthFilter(5))
@@ -102,14 +99,14 @@ class LocationFragment : Fragment(), OnLocationClickedListener {
             .setView(input)
             .setPositiveButton("Ok") { _, _ ->
                 val zip = input.text.toString()
-                onLocationClicked(view, zip)
+                onLocationClicked(zip)
             }
             .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
             .show()
     }
 
-    override fun onLocationClicked(view: View, zip: String) {
+    override fun onLocationClicked(zip: String) {
         val action = LocationFragmentDirections.openWeatherAction(zip)
-        view.findNavController().navigate(action)
+        findNavController(this).navigate(action)
     }
 }

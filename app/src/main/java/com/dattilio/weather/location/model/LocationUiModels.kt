@@ -7,7 +7,7 @@ import kotlinx.android.parcel.Parcelize
 sealed class LocationUiState {
     object Loading : LocationUiState()
     object Empty: LocationUiState()
-    data class Success(val data: List<Location>) : LocationUiState()
+    data class Success(val locations: List<Location>) : LocationUiState()
     data class Error(val error: String) : LocationUiState()
 }
 

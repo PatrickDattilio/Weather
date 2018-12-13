@@ -6,36 +6,36 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dattilio.weather.databinding.ItemLocationBinding
 import com.dattilio.weather.location.model.Location
 
-class LocationAdapter(val onLocationClicked: OnLocationClickedListener) : RecyclerView.Adapter<LocationViewHolder>() {
-    val data: MutableList<Location> = mutableListOf()
+class LocationAdapter(private val onLocationClicked: OnLocationClickedListener) : RecyclerView.Adapter<LocationViewHolder>() {
+    private val locations: MutableList<Location> = mutableListOf()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocationViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val databinding = ItemLocationBinding.inflate(inflater, parent, false)
-        return LocationViewHolder(databinding, onLocationClicked)
+        val locationBinding = ItemLocationBinding.inflate(inflater, parent, false)
+        return LocationViewHolder(locationBinding, onLocationClicked)
     }
 
     override fun getItemCount(): Int {
-        return data.size
+        return locations.size
     }
 
     override fun onBindViewHolder(holder: LocationViewHolder, position: Int) {
-        val location = data[position]
+        val location = locations[position]
         holder.bind(location)
     }
 
     fun update(newData: List<Location>) {
-        data.clear()
-        data.addAll(newData)
+        locations.clear()
+        locations.addAll(newData)
         notifyDataSetChanged()
     }
 }
 
 class LocationViewHolder(
-    val databinding: ItemLocationBinding,
-    val onLocationClicked: OnLocationClickedListener
-) : RecyclerView.ViewHolder(databinding.root) {
+    private val locationBinding: ItemLocationBinding,
+    private val onLocationClicked: OnLocationClickedListener
+) : RecyclerView.ViewHolder(locationBinding.root) {
     fun bind(location: Location) {
-        databinding.location = location
-        databinding.locationClicked = onLocationClicked
+        locationBinding.location = location
+        locationBinding.locationClicked = onLocationClicked
     }
 }

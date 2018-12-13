@@ -10,8 +10,10 @@ import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 
 class LocationViewModel : ViewModel() {
-    val locationSubject: BehaviorSubject<LocationUiState> = BehaviorSubject.createDefault(LocationUiState.Loading)
+    val locationStateSubject: BehaviorSubject<LocationUiState> =
+        BehaviorSubject.createDefault(LocationUiState.Loading)
     private lateinit var subscription: Disposable
+
     fun setup(locationRepository: LocationRepository) {
         subscription = locationRepository.getLocations()
             .subscribeOn(Schedulers.io())
@@ -25,14 +27,14 @@ class LocationViewModel : ViewModel() {
 
     private fun handleError(error: Throwable) {
         Timber.e(error)
-        locationSubject.onNext(LocationUiState.Error("Oops"))
+        locationStateSubject.onNext(LocationUiState.Error("Oops"))
     }
 
-    private fun handleSuccess(list: List<Location>) {
-        if (list.isEmpty()) {
-            locationSubject.onNext(LocationUiState.Empty)
+    private fun handleSuccess(locations: List<Location>) {
+        if (locations.isEmpty()) {
+            locationStateSubject.onNext(LocationUiState.Empty)
         } else {
-            locationSubject.onNext(LocationUiState.Success(list))
+            locationStateSubject.onNext(LocationUiState.Success(locations))
         }
     }
 

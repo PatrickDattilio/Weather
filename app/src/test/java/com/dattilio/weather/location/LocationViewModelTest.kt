@@ -19,7 +19,7 @@ class LocationViewModelTest {
     @Test
     fun noSetup() {
         val locationViewmodel = LocationViewModel()
-        val testObserver = locationViewmodel.locationSubject.test()
+        val testObserver = locationViewmodel.locationStateSubject.test()
         testObserver.assertValue(LocationUiState.Loading)
     }
 
@@ -30,7 +30,7 @@ class LocationViewModelTest {
             on { getLocations() } doReturn Single.just(emptyList())
         }
         locationViewmodel.setup(mockLocationRepository)
-        val testObserver = locationViewmodel.locationSubject.test()
+        val testObserver = locationViewmodel.locationStateSubject.test()
         testObserver.assertValue(LocationUiState.Empty)
     }
 
@@ -41,7 +41,7 @@ class LocationViewModelTest {
             on { getLocations() } doReturn Single.error(Throwable("test"))
         }
         locationViewmodel.setup(mockLocationRepository)
-        val testObserver = locationViewmodel.locationSubject.test()
+        val testObserver = locationViewmodel.locationStateSubject.test()
         testObserver.assertValue(LocationUiState.Error("Oops"))
     }
 
@@ -53,7 +53,7 @@ class LocationViewModelTest {
             on { getLocations() } doReturn Single.just(list)
         }
         locationViewmodel.setup(mockLocationRepository)
-        val testObserver = locationViewmodel.locationSubject.test()
+        val testObserver = locationViewmodel.locationStateSubject.test()
         testObserver.assertValue(LocationUiState.Success(list))
     }
 }
