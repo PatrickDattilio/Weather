@@ -4,7 +4,7 @@ import android.app.Application
 import com.jakewharton.threetenabp.AndroidThreeTen
 import timber.log.Timber
 
-class WeatherApplication: Application() {
+class WeatherApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()

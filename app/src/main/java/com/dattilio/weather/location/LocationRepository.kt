@@ -9,12 +9,12 @@ import io.reactivex.Single
 
 
 class LocationRepository(val context: Context) {
-    val locationPreference = "LOCATION_PREFERENCE"
-    val locationList = "LOCATION_LIST"
-    val moshi = Moshi.Builder().build()
-    val listMyData = Types.newParameterizedType(List::class.java, Location::class.java)
-    val adapter = moshi.adapter<List<Location>>(listMyData)
-    val preference = context.getSharedPreferences(locationPreference, MODE_PRIVATE)
+    private val locationPreference = "LOCATION_PREFERENCE"
+    private val locationList = "LOCATION_LIST"
+    private val moshi = Moshi.Builder().build()
+    private val listMyData = Types.newParameterizedType(List::class.java, Location::class.java)
+    private val adapter = moshi.adapter<List<Location>>(listMyData)
+    private val preference = context.getSharedPreferences(locationPreference, MODE_PRIVATE)
 
     fun getLocations(): Single<List<Location>> {
         return Single.defer {

@@ -10,8 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Add a location!"
-        android:textSize="48dp" />
+        android:text="@string/add_a_location"
+        android:textSize="48sp" />
 
     <ProgressBar
         android:id="@+id/loading"

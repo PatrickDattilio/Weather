@@ -59,8 +59,8 @@ class WeatherViewModel : ViewModel() {
     }
 
     private val MILLISECONDS_IN_SECONDS = 1000
-    private val dayFormat = SimpleDateFormat("E")
-    private val timeFormat = SimpleDateFormat("HH:mm")
+    private val dayFormat = SimpleDateFormat("E", Locale.US)
+    private val timeFormat = SimpleDateFormat("HH:mm", Locale.US)
     private fun mapHourlyApiToUi(hourlyApiModel: HourlyWeatherResponse): HourlyForecast {
         val date = Date(hourlyApiModel.dt * MILLISECONDS_IN_SECONDS)
         val weatherStatus = hourlyApiModel.weather[0]

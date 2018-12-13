@@ -7,7 +7,7 @@ import com.dattilio.weather.databinding.ItemWeatherBinding
 import com.dattilio.weather.forecast.model.HourlyForecast
 
 class WeatherAdapter : RecyclerView.Adapter<WeatherViewHolder>() {
-    var hourlyForecasts: MutableList<HourlyForecast> = mutableListOf()
+    private var hourlyForecasts: MutableList<HourlyForecast> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeatherViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -30,7 +30,7 @@ class WeatherAdapter : RecyclerView.Adapter<WeatherViewHolder>() {
     }
 }
 
-class WeatherViewHolder(val weatherBinding: ItemWeatherBinding) : RecyclerView.ViewHolder(weatherBinding.root) {
+class WeatherViewHolder(private val weatherBinding: ItemWeatherBinding) : RecyclerView.ViewHolder(weatherBinding.root) {
     fun bind(weather: HourlyForecast) {
         weatherBinding.weather = weather
     }
