@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.dattilio.weather.DelayedToolbarTitleChanger
 import com.dattilio.weather.MainActivity
 import com.dattilio.weather.R
 import com.dattilio.weather.forecast.model.ForecastUiState
@@ -27,6 +28,7 @@ class WeatherFragment : Fragment() {
     private lateinit var weatherAdapter: WeatherAdapter
     private lateinit var locationRepository: LocationRepository
     private lateinit var subscription: Disposable
+    private lateinit var titleChanger: DelayedToolbarTitleChanger
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -77,7 +79,7 @@ class WeatherFragment : Fragment() {
 
 
     private fun updateCity(cityName: String, zip: String) {
-        (activity as MainActivity).changeTitle(cityName)
+        titleChanger.changeTitle(cityName)
         locationRepository.addLocation(Location(cityName, zip))
     }
 
@@ -86,4 +88,7 @@ class WeatherFragment : Fragment() {
         loading.visibility = VISIBLE
     }
 
+    fun setDelayedToolbarTitleChanger(changer: DelayedToolbarTitleChanger){
+        titleChanger = changer
+    }
 }
