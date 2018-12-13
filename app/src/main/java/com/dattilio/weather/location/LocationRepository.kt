@@ -22,7 +22,7 @@ class LocationRepository(val context: Context) {
         }
     }
 
-    private fun retrieveLocation(): MutableList<Location> {
+    private fun retrieveLocation(): List<Location> {
         val listAsString = preference.getString(locationList, "") ?: ""
         return if (listAsString.isEmpty()) {
             mutableListOf()
@@ -33,7 +33,7 @@ class LocationRepository(val context: Context) {
 
     fun addLocation(location: Location) {
         val list = retrieveLocation()
-        list.add(location)
+        list.toMutableList().add(location)
         preference.edit().putString(locationList, adapter.toJson(list)).apply()
     }
 }
