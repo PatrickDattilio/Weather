@@ -33,7 +33,9 @@ class LocationRepository(val context: Context) {
 
     fun addLocation(location: Location) {
         val list = retrieveLocation()
-        list.toMutableList().add(location)
-        preference.edit().putString(locationList, adapter.toJson(list)).apply()
+        if(!list.contains(location)) {
+            list.toMutableList().add(location)
+            preference.edit().putString(locationList, adapter.toJson(list)).apply()
+        }
     }
 }
